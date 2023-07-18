@@ -1,0 +1,106 @@
+//Tea Pot on a Table
+
+#include<stdlib.h>
+#include<GL/glut.h>
+void display()
+{
+	GLfloat mat[] = { 1,0,0,1 };
+	GLfloat POS[] = { 1.0, 1.0, 0.0, 0.0 };
+	glLightfv(GL_LIGHT0, GL_POSITION, POS);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	gluLookAt(0.9, 0.2, 0.5, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+	glMaterialfv(GL_FRONT, GL_SPECULAR, mat);
+
+	//leftwall
+	glPushMatrix();
+	glTranslatef(0.02, 1.0, 1.0);
+	glScalef(0.02, 1.0, 1.0);
+	glutSolidCube(2.0);
+	glPopMatrix();
+
+	//rightwall
+	glPushMatrix();
+	glTranslatef(1.0, 1.0, 0.02);
+	glScalef(1.0, 1.0, 0.02);
+	glutSolidCube(2.0);
+	glPopMatrix();
+
+	//floor
+	glPushMatrix();
+	glTranslatef(1.0, 0.02, 1.0);
+	glScalef(1.0, 0.02, 1.0);
+	glutSolidCube(2.0);
+	glPopMatrix();
+
+	//tabletop
+	glPushMatrix();
+	glTranslatef(1.0, 0.5, 1.0);
+	glScalef(1.0, 0.02, 1.0);
+	glutSolidCube(1.0);
+	glPopMatrix();
+
+	//backtableleg
+	glPushMatrix();
+	glTranslatef(0.55, 0.25, 0.55);
+	glScalef(0.05, 0.5, 0.05);
+	glutSolidCube(1.0);
+	glPopMatrix();
+
+	//righttableleg
+	glPushMatrix();
+	glTranslatef(1.45, 0.25, 0.55);
+	glScalef(0.05, 0.5, 0.05);
+	glutSolidCube(1.0);
+	glPopMatrix();
+
+	//lefttableleg
+	glPushMatrix();
+	glTranslatef(0.55, 0.25, 1.45);
+	glScalef(0.05, 0.5, 0.05);
+	glutSolidCube(1.0);
+	glPopMatrix();
+
+	//fronttableleg
+	glPushMatrix();
+	glTranslatef(1.45, 0.25, 1.45);
+	glScalef(0.05, 0.5, 0.05);
+	glutSolidCube(1.0);
+	glPopMatrix();
+
+	//Teapot 
+	glPushMatrix();
+	glTranslatef(1.0, 0.59, 1.0);
+	glRotatef(20, 0.0, 1.0, 0.0);
+	glutSolidTeapot(0.1);
+	glPopMatrix();
+
+	glFlush();
+	glutSwapBuffers();
+}
+void myReshape(int w, int h)
+{
+	glClearColor(0.0, 0.0, 0.0, 0.0);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glViewport(0, 0, w, h);
+	if (w <= h)
+		glOrtho(-2.0, 2.0, -2.0 * (GLfloat)h / (GLfloat)w, 2.0 * (GLfloat)h / (GLfloat)w, -10.0,
+			10.0);
+	else
+		glOrtho(-2.0 * (GLfloat)w / (GLfloat)h, 2.0 * (GLfloat)w / (GLfloat)h, -2.0, 2.0, -10.0,
+			10.0);
+	glMatrixMode(GL_MODELVIEW);
+}
+void main(int argc, char** argv)
+{
+	glutInit(&argc, argv);
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+	glutInitWindowSize(500, 500);
+	glutCreateWindow("TEAPOT ON TABLE");
+	glutReshapeFunc(myReshape);
+	glutDisplayFunc(display);
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
+	glutMainLoop();
+}

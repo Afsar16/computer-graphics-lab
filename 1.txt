@@ -1,0 +1,103 @@
+//1. Implement Brenham‟s line drawing algorithm for all types of slope.
+
+#include <GL/glut.h>
+#include<stdio.h>
+
+int x0, y0, x1, y1;
+void plotpixel(int x, int y)
+{
+    glPointSize(4.0);
+    glBegin(GL_POINTS);
+    glVertex2i(x, y);
+    glEnd();
+}
+void init()
+{
+    glClearColor(0.0, 0.0, 0.0, 0.0);
+    gluOrtho2D(-100, 100, -100, 100);
+}
+void Bresenham(int x0, int y0, int x1, int y1)
+{
+    int dx, dy, x, y, p0;
+    if (x0 > x1)
+    {
+        x1 = x1 + x0;
+        x0 = x1 - x0;
+        x1 = x1 - x0;
+        y1 = y1 + y0;
+        y0 = y1 - y0;
+        y1 = y1 - y0;
+    }
+    x = x0; y = y0; dy = y1 - y0; dx = x1 - x0; p0 = 2 * dy - dx;
+    plotpixel(x, y);
+    while (x < x1)
+    {
+        x++;
+        if (p0 < 0)
+        {
+            plotpixel(x, y);
+            p0 = p0 + 2 * dy;
+        }
+        else
+        {
+            y++;
+            plotpixel(x, y);
+            p0 = p0 + 2 * (dy - dx);
+        }
+    }
+}
+void Bresenham_ng(int x0, int y0, int x1, int y1)
+{
+    int dx, dy, x, y, p0;
+    if (x0 > x1)
+    {
+        x1 = x1 + x0;
+        x0 = x1 - x0;
+        x1 = x1 - x0;
+        y1 = y1 + y0;
+        y0 = y1 - y0;
+        y1 = y1 - y0;
+    }
+    x = x0; y = y0; dy = y1 - y0; dx = x1 - x0; p0 = 2 * dx - dy;
+    plotpixel(x, y);
+    while (x < x1)
+    {
+        x++;
+        if (p0 < 0)
+        {
+            plotpixel(x, y);
+            p0 = p0 + 2 * dx;
+        }
+        else
+        {
+            y--;
+            plotpixel(x, y);
+            p0 = p0 + 2 * (dx - dy);
+        }
+    }
+}
+void display()
+{
+    glClear(GL_COLOR_BUFFER_BIT);
+    if (y0 > y1)
+        Bresenham_ng(x0, y0, x1, y1);
+    else
+        Bresenham(x0, y0, x1, y1);
+    glFlush();
+}
+int main(int argc, char** argv)
+{
+    glutInit(&argc, argv);
+    printf("Enter x0,y0 values:");
+    scanf_s("%d %d", &x0, &y0);
+    printf("Enter x1,y1 values:");
+    scanf_s("%d %d", &x1, &y1);
+    glutInitWindowSize(690, 690);
+    glutInitDisplayMode(GLUT_SINGLE);
+    glutInitWindowPosition(50, 50);
+    glutCreateWindow("Bresenham");
+    init();
+    glutDisplayFunc(display);
+    glutMainLoop();
+    return 0;
+}

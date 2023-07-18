@@ -1,0 +1,87 @@
+//Program - 3
+// Spining the Cube
+
+#include<GL/glut.h>
+
+float v[][3] = { {-1,-1,-1},{1,-1,-1},{1,1,-1},{-1,1,-1},{-1,-1,1},{1,-1,1},{1,1,1},{-1,1,1} };
+static float theta[] = { 0.0,0.0,0.0 };
+static int axis = 2;
+
+void polygon(int a, int b, int c, int d) {
+
+
+	glBegin(GL_POLYGON);
+	glColor3fv(v[a]);
+	glVertex3fv(v[a]);
+	glColor3fv(v[b]);
+	glVertex3fv(v[b]);
+	glColor3fv(v[c]);
+	glVertex3fv(v[c]);
+	glColor3fv(v[d]);
+	glVertex3fv(v[d]);
+	glEnd();
+}
+
+
+void colorcube() {
+	polygon(0, 1, 2, 3);
+	polygon(0, 3, 7, 4);
+	polygon(0, 1, 5, 4);
+	polygon(3, 2, 6, 7);
+	polygon(1, 2, 6, 5);
+	polygon(4, 5, 6, 7);
+}
+
+
+void display() {
+	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+	glLoadIdentity();
+	glRotatef(theta[0], 1.0, 0.0, 0.0);
+	glRotatef(theta[1], 0.0, 1.0, 0.0);
+	glRotatef(theta[2], 0.0, 0.0, 1.0);
+	colorcube();
+	glFlush();
+	glutSwapBuffers();
+}
+
+void spincube() {
+	theta[axis] += 0.1;
+	if (theta[axis] > 360.0)
+		theta[axis] -= 360;
+	glutPostRedisplay();
+}
+
+void mouse(int btn, int state, int x, int y) {
+	if (btn == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
+		axis = 0;
+	if (btn == GLUT_RIGHT_BUTTON && state == GLUT_DOWN)
+		axis = 1;
+	if (btn == GLUT_MIDDLE_BUTTON && state == GLUT_DOWN)
+		axis = 2;
+}
+
+void myreshape(int w, int h) {
+	glViewport(0, 0, w, h);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	if (w <= h)
+		glOrtho(-2.0, 2.0, -2.0 * (GLfloat)h / (GLfloat)w, 2.0 * (GLfloat)h / (GLfloat)w, -10.0, 10.0);
+	else
+		glOrtho(-2.0 * (GLfloat)w / (GLfloat)h, 2.0 * (GLfloat)w / (GLfloat)h, -2.0, 2.0, -10.0, 10.0);
+
+	glMatrixMode(GL_MODELVIEW);// This allows you to apply transformations to objects in the scene, such as moving or rotating them.
+}
+
+int main(int argc, char** argv) { 
+	glutInit(&argc, argv);
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
+	glutInitWindowSize(500, 500);
+	glutCreateWindow("Spinning Cube");
+	glutReshapeFunc(myreshape);
+	glutDisplayFunc(display);
+	glutIdleFunc(spincube);
+	glutMouseFunc(mouse);
+	glEnable(GL_DEPTH_TEST);
+	glutMainLoop();
+}
+

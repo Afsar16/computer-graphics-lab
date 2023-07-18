@@ -1,0 +1,79 @@
+#include <GL/glut.h>
+#include<windows.h>
+
+float v[][3] = { {-1.0,-1.0,-1.0},{1.0,-1.0,-1.0}, {1.0,1.0,-1.0}, {-1.0,1.0,-1.0}, {-1.0,-1.0,1.0}, {1.0,-1.0,1.0}, {1.0,1.0,1.0}, {-1.0,1.0,1.0} };
+float eye[3] = { 0.0,0.0,4.0 };
+
+void square(int a, int b, int c, int d)
+{
+	glBegin(GL_QUADS);
+	glColor3fv(v[a]);
+	glVertex3fv(v[a]);
+	glColor3fv(v[b]);
+	glVertex3fv(v[b]);
+	glColor3fv(v[c]);
+	glVertex3fv(v[c]);
+	glColor3fv(v[d]);
+	glVertex3fv(v[d]);
+	glEnd();
+}
+void colorcube(void)
+{
+	square(0, 3, 2, 1);
+	square(2, 3, 7, 6);
+	square(7, 3, 0, 4);
+	square(1, 2, 6, 5);
+	square(6, 7, 4, 5);
+	square(0, 1, 5, 4);
+}
+
+void display(void)
+{
+
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glLoadIdentity();
+	gluLookAt(eye[0], eye[1], eye[2], 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+	colorcube();
+	glFlush();
+	glutSwapBuffers();
+
+}
+
+void keys(unsigned char k, int x, int y)
+{
+	if (k == 'x')eye[0] += 0.1;
+	if (k == 'X')eye[0] -= 0.1;
+	if (k == 'y')eye[1] += 0.1;
+	if (k == 'Y')eye[1] -= 0.1;
+	if (k == 'z')eye[2] += 0.1;
+	if (k == 'Z')eye[2] -= 0.1;
+	display();
+}
+
+void reshape(int w, int h)
+{
+	glViewport(0, 0, w, h);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	if (w < h)
+		//glFrustum(-2.0,2.0,-2.0*((GLfloat)h/(GLfloat)w),2.0*((GLfloat)h/(GLfloat)w),2.0,20.0);
+		gluPerspective(60, (GLfloat)h / (GLfloat)w, 2.0, 30.0);
+	else
+		//glFrustum(-2.0*((GLfloat)w/(GLfloat)h),2.0*((GLfloat)w/(GLfloat)h),-2.0,2.0,2.0,20.0);
+		gluPerspective(60, (GLfloat)w / (GLfloat)h, 2.0, 30.0);
+	glMatrixMode(GL_MODELVIEW);
+
+}
+
+int main(int argc, char** argv)
+{
+	glutInit(&argc, argv);
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+	glutInitWindowSize(500, 500);
+	glutCreateWindow("Perspective Color Cube");
+	glutDisplayFunc(display);
+	glutKeyboardFunc(keys);
+	glEnable(GL_DEPTH_TEST);
+	glutReshapeFunc(reshape);
+	glutMainLoop();
+}

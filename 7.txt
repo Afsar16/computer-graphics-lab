@@ -1,0 +1,108 @@
+#include <GL/glut.h>
+#include <stdio.h>
+#include<stdlib.h>
+
+//GLfloat v[4][3] = { {0.0, 0.0, 1.0}, {0.0, 0.942809, -0.333333},
+ //                  {-0.816497, -0.471405, -0.333333},
+   //                {0.816497, -0.471405, -0.333333} };
+GLfloat v[4][3] = {{-1.0,-0.5,0},{1,-0.5,0},{0,1,0},{0,0,1}};
+int n;
+
+void draw_tetrahedron(GLfloat* a, GLfloat* b, GLfloat* c, GLfloat* d) {
+
+    glColor3f(0.0, 0.0, 0.0);
+    glBegin(GL_TRIANGLES);
+    glVertex3fv(a);
+    glVertex3fv(b);
+    glVertex3fv(c);
+    glEnd();
+
+
+    glColor3f(0.0, 1.0, 1.0);
+    glBegin(GL_TRIANGLES);
+    glVertex3fv(a);
+    glVertex3fv(c);
+    glVertex3fv(d);
+    glEnd();
+
+
+    glColor3f(1.0, 0.0, 1.0);
+    glBegin(GL_TRIANGLES);
+    glVertex3fv(a);
+    glVertex3fv(b);
+    glVertex3fv(d);
+    glEnd();
+
+
+    glColor3f(1.0, 1.0, 0.0);
+    glBegin(GL_TRIANGLES);
+    glVertex3fv(b);
+    glVertex3fv(d);
+    glVertex3fv(c);
+    glEnd();
+}
+
+void divide_tetrahedron(GLfloat* a, GLfloat* b, GLfloat* c, GLfloat* d, int m) {
+    GLfloat mid[6][3];
+
+    if (m > 0) {
+        for (int i = 0; i < 3; i++) {
+            mid[0][i] = (a[i] + b[i]) / 2.0;
+            mid[1][i] = (a[i] + c[i]) / 2.0;
+            mid[2][i] = (a[i] + d[i]) / 2.0;
+            mid[3][i] = (b[i] + c[i]) / 2.0;
+            mid[4][i] = (b[i] + d[i]) / 2.0;
+            mid[5][i] = (c[i] + d[i]) / 2.0;
+        }
+
+        divide_tetrahedron(a, mid[0], mid[1], mid[2], m - 1);
+        divide_tetrahedron(mid[0], b, mid[3], mid[4], m - 1);
+        divide_tetrahedron(mid[1], mid[3], c, mid[5], m - 1);
+        divide_tetrahedron(mid[2], mid[4], mid[5], d, m - 1);
+    }
+    else {
+        draw_tetrahedron(a, b, c, d);
+    }
+}
+
+void display() {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glLoadIdentity();
+    divide_tetrahedron(v[0], v[1], v[2], v[3], n);
+    glFlush();
+}
+
+void myReshape(int w, int h)
+{
+    glViewport(0, 0, w, h);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();//erazing the prev matrix projection values
+    if (w <= h)
+        glOrtho(-2, 2, -2 * (GLfloat)h / (GLfloat)w, 2 * (GLfloat)h / (GLfloat)w, -10, 10);
+    else
+        glOrtho(-2 * (GLfloat)w / (GLfloat)h, 2 * (GLfloat)w / (GLfloat)h, -2, 2, -10, 10);
+    glMatrixMode(GL_MODELVIEW);
+    glutPostRedisplay();
+}
+
+
+
+int main(int argc, char** argv) {
+    printf("Enter the number of divisions: ");
+    scanf_s("%d", &n);
+
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH);
+    glutInitWindowSize(500, 500);
+    glutCreateWindow("3D Sierpinski Gasket");
+    glutReshapeFunc(myReshape);
+    glutDisplayFunc(display);
+
+    glEnable(GL_DEPTH_TEST);
+    glClearColor(1, 1, 1, 0);
+
+
+    glutMainLoop();
+
+    return 0;
+}

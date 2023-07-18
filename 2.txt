@@ -1,0 +1,69 @@
+//2. Create and rotate a triangle about the origin and a fixed point.
+#include <GL/glut.h>
+#include <stdlib.h>
+#include <stdio.h>
+
+float x, y;
+int angle;
+
+void init()
+{
+	glClearColor(0.0, 0.0, 0.0, 0.0);
+	gluOrtho2D(-100, 100, -100, 100);
+}
+
+void triangle()
+{
+	glBegin(GL_TRIANGLES);
+	glVertex2f(10.0, 10.0);
+	glVertex2f(30.0, 10.0);
+	glVertex2f(20.0, 40.0);
+	glEnd();
+}
+void display()
+{
+	glClear(GL_COLOR_BUFFER_BIT);
+	glColor3f(1.0, 1.0, 1.0);
+	glBegin(GL_LINES);	 // these are the x and y cordinates
+	glVertex2f(-100, 0); // bottom - 0
+	glVertex2f(100, 0);	 // 0 - top and so on
+	glVertex2f(0, -100);
+	glVertex2f(0, 100);
+	glEnd();
+
+	glColor3f(1.0, 0.0, 0.0);
+	triangle();
+
+	glPushMatrix();
+	glRotatef(angle, 0.0, 0.0, 1.0); // rotates around the z-axis
+	glColor3f(0.0, 1.0, 0.0);
+	triangle();
+	glPopMatrix();
+
+	glPushMatrix();
+	glTranslatef(x, y, 0.0);
+	glRotatef(angle, 0.0, 0.0, 1);
+	glTranslatef(-x, -y, 0.0);
+	glColor3f(0.0, 0.0, 1.0);
+	triangle();
+	glPopMatrix();
+
+	glFlush();
+}
+int main(int argc, char** argv)
+{
+	glutInit(&argc, argv);
+	printf("Enter the angle :\n");
+	scanf_s("%d", &angle);
+	printf("Enter the fixed points X and Y :\n");
+	scanf_s("%f %f", &x, &y);
+	glutInitDisplayMode(GLUT_SINGLE);
+	glutInitWindowSize(600, 600);
+	glutCreateWindow("Triangle rotation");
+	init();
+	glutDisplayFunc(display);
+	glutMainLoop();
+}
+
+
+

@@ -1,0 +1,136 @@
+#include<stdio.h>
+#include<GL/glut.h>
+float xvmin = 150, xvmax = 350, yvmin = 150, yvmax = 350, x1, x2, y1, y2;
+const int TOP = 8, BOTTOM = 4, RIGHT = 2, LEFT = 1;
+int ComputeCode(float x, float y)
+{
+	int code = 0;
+	if (y > yvmax)
+		code = TOP;
+	if (y < yvmin)
+		code = BOTTOM;
+	if (x > xvmax)
+		code = RIGHT;
+	if (x < xvmin)
+		code = LEFT;
+	return code;
+}
+void display()
+{
+	glClear(GL_COLOR_BUFFER_BIT);
+	glColor3f(0, 1, 0);
+	glBegin(GL_LINE_LOOP);
+	glVertex2f(xvmin, yvmin);
+	glVertex2f(xvmax, yvmin);
+	glVertex2f(xvmax, yvmax);
+	glVertex2f(xvmin, yvmax);
+	glEnd();
+	glColor3f(1, 0, 0);
+	glLineWidth(2.0);
+	glBegin(GL_LINES);
+	glVertex2f(x1, y1);
+	glVertex2f(x2, y2);
+	glEnd();
+	glFlush();
+}
+void cohensuterland()
+{
+	int code1, code2, code;
+	bool accept = false, done = false;
+	code1 = ComputeCode(x1, y1);
+	code2 = ComputeCode(x2, y2);
+	{
+		do {
+			if (code1 == 0 && code2 == 0)
+			{
+				accept = true;
+				done = true;
+			}
+			/*else if (code1 & code2)
+			{
+				done = true;
+				x1 = 0;
+				y1 = 0;
+				x2 = 0;
+				y2 = 0;
+			}*/
+			else
+			{
+				int x, y;
+				code = code1 ? code1 : code2;
+				/*if (code1) {
+					code = code1;
+				}
+				else {
+					code = code2;
+				}*/
+
+				if (code & TOP)
+				{
+					x = x1 + (x2 - x1) * (yvmax - y1) / (y2 - y1);
+					y = yvmax;
+				}
+				else if (code & BOTTOM)
+				{
+					x = x1 + (x2 - x1) * (yvmin - y1) / (y2 - y1);
+					y = yvmin;
+				}
+				else if (code & RIGHT)
+				{
+					y = y1 + (y2 - y1) * (xvmax - x1) / (x2 - x1);
+					x = xvmax;
+				}
+				else
+				{
+					y = y1 + (y2 - y1) * (xvmin - x1) / (x2 - x1);
+					x = xvmin;
+				}
+				if (code == code1)
+				{
+					x1 = x;
+					y1 = y;
+					code1 = ComputeCode(x1, y1);
+				}
+				else
+				{
+					x2 = x;
+					y2 = y;
+					code2 = ComputeCode(x2, y2);
+				}
+			}
+		} while (!done);
+		if (accept)
+		{
+			display();
+		}
+	}
+}
+void init()
+{
+	glClearColor(0.0, 0.0, 0.0, 0.0);
+	gluOrtho2D(0.0, 500.0, 0.0, 500.0);
+}
+void mouse(int bt, int st, int x, int y)
+{
+	if (bt == GLUT_LEFT_BUTTON && st == GLUT_DOWN)
+	{
+		cohensuterland();
+	}
+	glutPostRedisplay();
+}
+int main(int argc, char** argv)
+{
+	glutInit(&argc, argv);
+	printf("Enter the x1,y1 values\n");
+	scanf_s("%f%f", &x1, &y1);
+	printf("Enter the x2,y2 values\n");
+	scanf_s("%f%f", &x2, &y2);
+	glutInitDisplayMode(GLUT_SINGLE);
+	glutInitWindowSize(600, 600);
+	glutCreateWindow("COHEN SUTERLAND LINE CLIPPLING");
+	init();
+	glutDisplayFunc(display);
+	glutMouseFunc(mouse);
+	glutMainLoop();
+	return 0;
+}
